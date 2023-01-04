@@ -10,6 +10,7 @@ setup(
     packages=["lecture_notes_generator"],
     install_requires=[
         "opencv-python",
+        "tqdm",
     ],
     zip_safe=False,
 )
