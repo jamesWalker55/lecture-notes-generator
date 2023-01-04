@@ -1,4 +1,5 @@
 import cv2
+from tqdm import tqdm
 
 from .utils import cached, each_cons
 
@@ -11,20 +12,24 @@ def every_n_frames(cap, n):
     # start at frame 0
     count = 0
 
-    while cap.isOpened():
-        success, frame = cap.read()
+    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    start_pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
+    with tqdm(total=length, initial=start_pos) as pbar:
+        while cap.isOpened():
+            success, frame = cap.read()
 
-        if not success:
-            break
+            if not success:
+                break
 
-        try:
-            yield frame
-        except Exception as e:
-            cap.release()
-            raise e
+            try:
+                yield frame
+            except Exception as e:
+                cap.release()
+                raise e
 
-        count += n  # advance by n frames
-        cap.set(cv2.CAP_PROP_POS_FRAMES, count)
+            count += n  # advance by n frames
+            pbar.update(n)
+            cap.set(cv2.CAP_PROP_POS_FRAMES, count)
 
     cap.release()
 
