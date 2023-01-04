@@ -11,6 +11,7 @@ setup(
     install_requires=[
         "opencv-python",
         "tqdm",
+        "whisper @ git+https://github.com/openai/whisper.git",
     ],
     zip_safe=False,
 )
