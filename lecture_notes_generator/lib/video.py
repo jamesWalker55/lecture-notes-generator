@@ -9,11 +9,10 @@ def every_frame(cap):
 
 
 def every_n_frames(cap, n):
-    # start at frame 0
-    count = 0
-
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     start_pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
+
+    countdown = 0
     with tqdm(total=length, initial=start_pos) as pbar:
         while cap.isOpened():
             success, frame = cap.read()
@@ -21,15 +20,17 @@ def every_n_frames(cap, n):
             if not success:
                 break
 
-            try:
-                yield frame
-            except Exception as e:
-                cap.release()
-                raise e
+            if countdown == 0:
+                countdown = n - 1
+                try:
+                    yield frame
+                except Exception as e:
+                    cap.release()
+                    raise e
+            else:
+                countdown -= 1
 
-            count += n  # advance by n frames
-            pbar.update(n)
-            cap.set(cv2.CAP_PROP_POS_FRAMES, count)
+            pbar.update(1)
 
     cap.release()
 
