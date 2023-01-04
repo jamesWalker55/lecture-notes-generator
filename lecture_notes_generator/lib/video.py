@@ -5,7 +5,25 @@ from .utils import cached, each_cons
 
 
 def every_frame(cap):
-    yield from every_n_frames(cap, 1)
+    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    start_pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
+
+    with tqdm(total=length, initial=start_pos) as pbar:
+        while cap.isOpened():
+            success, frame = cap.read()
+
+            if not success:
+                break
+
+            try:
+                yield frame
+            except Exception as e:
+                cap.release()
+                raise e
+
+            pbar.update(1)
+
+    cap.release()
 
 
 def every_n_frames(cap, n):
