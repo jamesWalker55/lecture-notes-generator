@@ -91,7 +91,9 @@ if __name__ == "__main__":
 
     # find and plot the peaks
     peaks = scipy.signal.find_peaks(diff, distance=30, threshold=12)
-    for x in peaks[0]:
+    scene_changes = [0, *(x + 1 for x in peaks[0])]
+
+    for x in scene_changes:
         plt.plot(x, diff[x], "yo")
 
     # show the plot
