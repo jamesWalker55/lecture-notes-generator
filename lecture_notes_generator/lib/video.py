@@ -77,6 +77,20 @@ def frames_absolute_diff(cap):
     return result
 
 
+def get_snapshots(cap, frames: list[int]):
+    frames = sorted(frames)
+    snapshots = []
+
+    for f in frames:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, f)
+        ok, frame = cap.read()
+        if not ok:
+            raise RuntimeError(f"Failed to get frame #{f} of video.")
+        snapshots.append((f, frame))
+
+    return snapshots
+
+
 def get_comparison_snapshots(cap, frames: list[int]):
     frames = sorted(frames)
     snapshots = []
