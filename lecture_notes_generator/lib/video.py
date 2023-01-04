@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 from tqdm import tqdm
 
 from .utils import cached, each_cons
@@ -76,6 +77,35 @@ def frames_absolute_diff(cap):
     return result
 
 
+def get_comparison_snapshots(cap, frames: list[int]):
+    frames = sorted(frames)
+    snapshots = []
+
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    if 0 in frames:
+        frames.remove(0)
+        black_frame = np.zeros((height, width, 3), np.uint8)
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        ok, zero_frame = cap.read()
+        if not ok:
+            raise RuntimeError("Failed to get first frame of video.")
+        snapshots.append((0, black_frame, zero_frame))
+
+    for f in frames:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, f - 1)
+        ok, before_frame = cap.read()
+        if not ok:
+            raise RuntimeError(f"Failed to get frame #{f - 1} of video.")
+        ok, after_frame = cap.read()
+        if not ok:
+            raise RuntimeError(f"Failed to get frame #{f} of video.")
+        snapshots.append((f, before_frame, after_frame))
+
+    return snapshots
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     import scipy.signal
@@ -95,6 +125,13 @@ if __name__ == "__main__":
 
     for x in scene_changes:
         plt.plot(x, diff[x], "yo")
+
+    comparisons = get_comparison_snapshots(video, scene_changes)
+    count = 0
+    for _, before, after in tqdm(comparisons):
+        joined = np.concatenate((before, after), axis=1)
+        cv2.imwrite("c/cut{:d}.jpg".format(count), joined)
+        count += 1
 
     # show the plot
     plt.show()
