@@ -1,8 +1,12 @@
 import json
 import os
+import re
 from collections import deque
+from functools import wraps
 
 import numpy
+
+from .paths import CACHE_DIR
 
 
 def each_cons(it, n, pad_first_iteration=False):
@@ -70,3 +74,28 @@ def cached_value(func, path):
         json.dump(value, f, default=_cache_default_handler)
 
     return value
+
+
+def sanitize_text_for_path(text):
+    return "".join([c for c in text if re.match(r"\w", c)])
+
+
+def cached(func):
+    @wraps(func)
+    def wrapped_func(*args, **kwargs):
+        if "_cache_name" in kwargs:
+            output_stem = sanitize_text_for_path(str(kwargs.pop("_cache_name")))
+        else:
+            args_str = "_".join(str(x) for x in args)
+            kwargs_str = "_".join(f"{k}={v}" for k, v in kwargs.items())
+            output_stem = sanitize_text_for_path(f"{args_str}_{kwargs_str}")
+
+        output_stem = f"{func.__name__}_{output_stem}"
+        output_path = (CACHE_DIR / output_stem).with_suffix(".json")
+
+        return cached_value(
+            lambda: func(*args, **kwargs),
+            output_path,
+        )
+
+    return wrapped_func

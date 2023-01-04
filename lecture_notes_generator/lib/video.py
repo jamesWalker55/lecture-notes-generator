@@ -1,7 +1,6 @@
 import cv2
 
-from .paths import CACHE_DIR
-from .utils import cached_value, each_cons
+from .utils import cached, each_cons
 
 
 def every_frame(cap):
@@ -30,6 +29,7 @@ def every_n_frames(cap, n):
     cap.release()
 
 
+@cached
 def frames_absolute_diff(cap):
     result = []
     count = 0
@@ -60,10 +60,7 @@ if __name__ == "__main__":
 
     video_path = TESTS_DIR / "video.mp4"
     video = cv2.VideoCapture(str(video_path))
-    diff = cached_value(
-        lambda: frames_absolute_diff(video),
-        CACHE_DIR / "video_main_cache.json",
-    )
+    diff = frames_absolute_diff(video, _cache_name=video_path)
 
     # plot result in a graph
     plt.plot(diff)
