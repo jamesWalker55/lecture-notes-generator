@@ -1,6 +1,7 @@
-from typing import TypedDict
+from typing import Callable, Iterator, TextIO, TypedDict
 
 import whisper
+from whisper.utils import write_txt, write_vtt
 
 from .utils import cached
 
@@ -16,6 +17,11 @@ class Segment(TypedDict):
     avg_logprob: float
     compression_ratio: float
     no_speech_prob: float
+
+
+# Custom typing for functinos in whisper
+write_txt: Callable[[Iterator[Segment], TextIO], None]
+write_vtt: Callable[[Iterator[Segment], TextIO], None]
 
 
 @cached
