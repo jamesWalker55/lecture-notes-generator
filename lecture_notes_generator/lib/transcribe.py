@@ -19,6 +19,12 @@ class FullSegment(TypedDict):
     no_speech_prob: float
 
 
+class Segment(TypedDict):
+    start: float
+    end: float
+    text: str
+
+
 # Custom typing for functinos in whisper
 write_txt: Callable[[Iterator[FullSegment], TextIO], None]
 write_vtt: Callable[[Iterator[FullSegment], TextIO], None]
