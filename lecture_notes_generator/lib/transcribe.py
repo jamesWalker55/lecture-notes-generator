@@ -1,9 +1,12 @@
+import json
+from pathlib import Path
 from typing import Callable, Iterator, TextIO, TypedDict
 
+import webvtt
 import whisper
 from whisper.utils import write_txt, write_vtt
 
-from .utils import cached
+from .utils import file_cache, parse_duration
 
 
 class FullSegment(TypedDict):
@@ -30,7 +33,19 @@ write_txt: Callable[[Iterator[FullSegment], TextIO], None]
 write_vtt: Callable[[Iterator[FullSegment], TextIO], None]
 
 
-@cached
+def _transcribe_load(f):
+    return [
+        {"start": parse_duration(x.start), "end": parse_duration(x.end), "text": x.text}
+        for x in webvtt.read_buffer(f)
+    ]
+
+
+def _path_transcribe(video_path, **kwargs):
+    video_path = Path(video_path)
+    return video_path.with_suffix(".vtt")
+
+
+@file_cache(_path_transcribe, write_vtt, _transcribe_load)
 def transcribe(
     path, model="large", language="en", initial_prompt=None
 ) -> list[Segment]:
