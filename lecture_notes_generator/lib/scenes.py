@@ -1,25 +1,25 @@
 import json
 from typing import Literal, NamedTuple
 
-from .transcribe import Segment
+from .transcribe import FullSegment
 from .utils import each_cons
 from .video import get_snapshots
 
 
 class Scene(NamedTuple):
     cut: int
-    segments: list[Segment]
+    segments: list[FullSegment]
 
 
 class RenderScene(NamedTuple):
     type: Literal["subtitles", "slideshow"]
     cuts: list[int]
-    segments: list[Segment]
+    segments: list[FullSegment]
 
 
 def pair(
     scene_change_frames: list[int],
-    segments: list[Segment],
+    segments: list[FullSegment],
     video_fps: int | float,
 ):
     scene_change_frames = sorted(scene_change_frames)

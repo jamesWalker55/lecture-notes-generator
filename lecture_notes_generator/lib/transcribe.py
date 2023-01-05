@@ -6,7 +6,7 @@ from whisper.utils import write_txt, write_vtt
 from .utils import cached
 
 
-class Segment(TypedDict):
+class FullSegment(TypedDict):
     id: int
     seek: int
     start: float
@@ -20,14 +20,14 @@ class Segment(TypedDict):
 
 
 # Custom typing for functinos in whisper
-write_txt: Callable[[Iterator[Segment], TextIO], None]
-write_vtt: Callable[[Iterator[Segment], TextIO], None]
+write_txt: Callable[[Iterator[FullSegment], TextIO], None]
+write_vtt: Callable[[Iterator[FullSegment], TextIO], None]
 
 
 @cached
 def transcribe(
     path, model="large", language="en", initial_prompt=None
-) -> tuple[str, list[Segment]]:
+) -> tuple[str, list[FullSegment]]:
     path = str(path)
 
     model = whisper.load_model(model)
