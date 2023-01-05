@@ -33,19 +33,24 @@ write_txt: Callable[[Iterator[FullSegment], TextIO], None]
 write_vtt: Callable[[Iterator[FullSegment], TextIO], None]
 
 
-def _transcribe_load(f):
+def _transcribe_load(path):
     return [
         {"start": parse_duration(x.start), "end": parse_duration(x.end), "text": x.text}
-        for x in webvtt.read_buffer(f)
+        for x in webvtt.read(path)
     ]
 
 
-def _path_transcribe(video_path, **kwargs):
+def _transcribe_dump(segments, path):
+    with open(path, "w", encoding="utf8") as f:
+        write_vtt(segments, f)
+
+
+def _transcribe_path(video_path, **kwargs):
     video_path = Path(video_path)
     return video_path.with_suffix(".vtt")
 
 
-@file_cache(_path_transcribe, write_vtt, _transcribe_load)
+@file_cache(_transcribe_path, _transcribe_dump, _transcribe_load)
 def transcribe(
     path, model="large", language="en", initial_prompt=None
 ) -> list[Segment]:

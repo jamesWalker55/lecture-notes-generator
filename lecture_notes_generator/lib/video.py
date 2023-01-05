@@ -64,20 +64,24 @@ def _json_default_handler(o):
     raise TypeError(o.__class__)
 
 
-def _dump(obj, f):
-    json.dump(obj, f, default=_json_default_handler)
+def _frames_absolute_diff_dump(obj, path):
+    with open(path, "w", encoding="utf8") as f:
+        json.dump(obj, f, default=_json_default_handler)
 
 
-def _load(f):
-    return json.load(f)
+def _frames_absolute_diff_load(path):
+    with open(path, "r", encoding="utf8") as f:
+        return json.load(f)
 
 
-def _path_frames_absolute_diff(video_path):
+def _frames_absolute_diff_path(video_path):
     video_path = Path(video_path)
     return video_path.with_stem(video_path.stem + "_absdiff").with_suffix(".json")
 
 
-@file_cache(_path_frames_absolute_diff, _dump, _load)
+@file_cache(
+    _frames_absolute_diff_path, _frames_absolute_diff_dump, _frames_absolute_diff_load
+)
 def frames_absolute_diff(path):
     cap = cv2.VideoCapture(path)
 

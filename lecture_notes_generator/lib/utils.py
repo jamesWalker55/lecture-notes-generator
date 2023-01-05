@@ -64,8 +64,8 @@ def each_cons(it, n, pad_first_iteration=False):
 
 def file_cache(
     path_func: Callable[..., Path],
-    dump_func: Callable[[Any, TextIO], None],
-    load_func: Callable[[TextIO], Any],
+    dump_func: Callable[[Any, Path], None],
+    load_func: Callable[[Path], Any],
 ):
     """Retrieve values from a file if the path exists, otherwise save output of the function to file"""
 
@@ -76,16 +76,14 @@ def file_cache(
             if cache_path.exists():
                 print(f"Loading from cached file: {cache_path}")
                 try:
-                    with open(cache_path, "r", encoding="utf8") as f:
-                        return load_func(f)
+                    return load_func(cache_path)
                 except Exception as e:
                     print("Failed to load from cached file.")
                     raise e
 
             value = func(*args, **kwargs)
 
-            with open(cache_path, "w", encoding="utf8") as f:
-                dump_func(value, f)
+            dump_func(value, cache_path)
 
             return value
 
