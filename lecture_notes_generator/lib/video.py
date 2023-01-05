@@ -1,9 +1,12 @@
+import json
+from pathlib import Path
+
 import cv2
 import numpy as np
 import scipy.signal
 from tqdm import tqdm
 
-from .utils import cached, each_cons
+from .utils import each_cons, file_cache
 
 
 def _every_frame(cap):
@@ -55,7 +58,26 @@ def _every_n_frames(cap, n):
     cap.release()
 
 
-@cached
+def _json_default_handler(o):
+    if isinstance(o, (np.int64, np.uint32)):
+        return int(o)
+    raise TypeError(o.__class__)
+
+
+def _dump(obj, f):
+    json.dump(obj, f, default=_json_default_handler)
+
+
+def _load(f):
+    return json.load(f)
+
+
+def _path_frames_absolute_diff(video_path):
+    video_path = Path(video_path)
+    return video_path.with_stem(video_path.stem + "_absdiff").with_suffix(".json")
+
+
+@file_cache(_path_frames_absolute_diff, _dump, _load)
 def frames_absolute_diff(path):
     cap = cv2.VideoCapture(path)
 
