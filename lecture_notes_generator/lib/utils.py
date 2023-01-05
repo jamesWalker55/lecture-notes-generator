@@ -83,9 +83,15 @@ def sanitize_text_for_path(text):
 def cached(func):
     @wraps(func)
     def wrapped_func(*args, **kwargs):
+        output_stem = None
+
         if "_cache_name" in kwargs:
-            output_stem = sanitize_text_for_path(str(kwargs.pop("_cache_name")))
-        else:
+            if kwargs["_cache_name"] is not None:
+                output_stem = sanitize_text_for_path(str(kwargs["_cache_name"]))
+
+            del kwargs["_cache_name"]
+
+        if output_stem is None:
             args_str = "_".join(str(x) for x in args)
             kwargs_str = "_".join(f"{k}={v}" for k, v in kwargs.items())
             output_stem = sanitize_text_for_path(f"{args_str}_{kwargs_str}")
