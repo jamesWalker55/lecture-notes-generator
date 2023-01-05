@@ -56,7 +56,9 @@ def every_n_frames(cap, n):
 
 
 @cached
-def frames_absolute_diff(cap):
+def frames_absolute_diff(path):
+    cap = cv2.VideoCapture(path)
+
     result = []
     count = 0
 
@@ -79,7 +81,7 @@ def frames_absolute_diff(cap):
 
 
 def detect_scene_changes(
-    cap,
+    path,
     height=None,
     threshold=None,
     distance=None,
@@ -103,7 +105,7 @@ def detect_scene_changes(
     - wlen: used for calculating peak prominence
     - rel_height: used for calculating peak width
     """
-    diff = frames_absolute_diff(cap, _cache_name=_cache_name)
+    diff = frames_absolute_diff(path)
 
     # find and plot the peaks
     peaks = scipy.signal.find_peaks(
@@ -120,7 +122,9 @@ def detect_scene_changes(
     return [0, *(x + 1 for x in peaks[0])]
 
 
-def get_snapshots(cap, frames: list[int]):
+def get_snapshots(path, frames: list[int]):
+    cap = cv2.VideoCapture(path)
+
     snapshots = []
 
     for f in frames:
@@ -133,7 +137,9 @@ def get_snapshots(cap, frames: list[int]):
     return snapshots
 
 
-def get_comparison_snapshots(cap, frames: list[int]):
+def get_comparison_snapshots(path, frames: list[int]):
+    cap = cv2.VideoCapture(path)
+
     snapshots = []
 
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -166,15 +172,14 @@ if __name__ == "__main__":
     from .paths import TESTS_DIR
 
     video_path = TESTS_DIR / "video.mp4"
-    video = cv2.VideoCapture(str(video_path))
     scene_changes = detect_scene_changes(
-        video,
+        str(video_path),
         distance=30,
         threshold=12,
         _cache_name=video_path,
     )
 
-    comparisons = get_comparison_snapshots(video, scene_changes)
+    comparisons = get_comparison_snapshots(str(video_path), scene_changes)
     count = 0
     for before, after in tqdm(comparisons):
         joined = np.concatenate((before, after), axis=1)
