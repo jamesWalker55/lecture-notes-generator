@@ -120,7 +120,6 @@ def detect_scene_changes(
 
 
 def get_snapshots(cap, frames: list[int]):
-    frames = sorted(frames)
     snapshots = []
 
     for f in frames:
@@ -134,30 +133,28 @@ def get_snapshots(cap, frames: list[int]):
 
 
 def get_comparison_snapshots(cap, frames: list[int]):
-    frames = sorted(frames)
     snapshots = []
 
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    if 0 in frames:
-        frames.remove(0)
-        black_frame = np.zeros((height, width, 3), np.uint8)
-        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-        ok, zero_frame = cap.read()
-        if not ok:
-            raise RuntimeError("Failed to get first frame of video.")
-        snapshots.append((0, black_frame, zero_frame))
-
     for f in frames:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, f - 1)
-        ok, before_frame = cap.read()
-        if not ok:
-            raise RuntimeError(f"Failed to get frame #{f - 1} of video.")
-        ok, after_frame = cap.read()
-        if not ok:
-            raise RuntimeError(f"Failed to get frame #{f} of video.")
-        snapshots.append((f, before_frame, after_frame))
+        if f == 0:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            black_frame = np.zeros((height, width, 3), np.uint8)
+            ok, zero_frame = cap.read()
+            if not ok:
+                raise RuntimeError("Failed to get first frame of video.")
+            snapshots.append((0, black_frame, zero_frame))
+        else:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, f - 1)
+            ok, before_frame = cap.read()
+            if not ok:
+                raise RuntimeError(f"Failed to get frame #{f - 1} of video.")
+            ok, after_frame = cap.read()
+            if not ok:
+                raise RuntimeError(f"Failed to get frame #{f} of video.")
+            snapshots.append((f, before_frame, after_frame))
 
     return snapshots
 
