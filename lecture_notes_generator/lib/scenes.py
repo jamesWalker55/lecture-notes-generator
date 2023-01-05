@@ -1,5 +1,7 @@
+import json
 from .transcribe import Segment
 from .utils import each_cons
+from .video import get_snapshots
 
 # [0] - the scene cut
 # [1] - list of text segments
@@ -44,6 +46,7 @@ if __name__ == "__main__":
     from .paths import TESTS_DIR
     from .transcribe import transcribe
     from .video import detect_scene_changes
+    from .utils import _cache_default_handler
 
     video_path = TESTS_DIR / "video.mp4"
     video = cv2.VideoCapture(str(video_path))
@@ -64,4 +67,9 @@ if __name__ == "__main__":
     fps = float(video.get(cv2.CAP_PROP_FPS))
 
     scenes = pair(scene_changes, segments, fps)
-    print(scenes)
+    for frame, img in zip(scene_changes, get_snapshots(video, scene_changes)):
+        print(frame, img)
+        cv2.imwrite("c/f{:06d}.jpg".format(frame), img)
+
+    with open("c/text.json", "w", encoding="utf8") as f:
+        json.dump(scenes, f, indent=2, default=_cache_default_handler)
