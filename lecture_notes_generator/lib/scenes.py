@@ -1,12 +1,19 @@
 import json
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
 from .transcribe import Segment
 from .utils import each_cons
 from .video import get_snapshots
 
+
 class Scene(NamedTuple):
     cut: int
+    segments: list[Segment]
+
+
+class RenderScene(NamedTuple):
+    type: Literal["subtitles", "slideshow"]
+    cuts: list[int]
     segments: list[Segment]
 
 
@@ -42,13 +49,35 @@ def pair(
     return scenes
 
 
+def group(scenes: list[Scene]):
+    render_scenes: list[RenderScene] = []
+    current_slideshow_scene = None
+    for sc in scenes:
+        if len(sc.segments) == 0:
+            if current_slideshow_scene is None:
+                current_slideshow_scene = RenderScene("slideshow", [], [])
+                render_scenes.append(current_slideshow_scene)
+            current_slideshow_scene.cuts.append(sc.cut)
+        else:
+            if current_slideshow_scene is not None:
+                current_slideshow_scene = None
+            render_scenes.append(
+                RenderScene(
+                    "subtitles",
+                    [sc.cut],
+                    sc.segments,
+                )
+            )
+    return render_scenes
+
+
 if __name__ == "__main__":
     import cv2
 
     from .paths import TESTS_DIR
     from .transcribe import transcribe
-    from .video import detect_scene_changes
     from .utils import _cache_default_handler
+    from .video import detect_scene_changes
 
     video_path = TESTS_DIR / "video.mp4"
     video = cv2.VideoCapture(str(video_path))
@@ -70,7 +99,6 @@ if __name__ == "__main__":
 
     scenes = pair(scene_changes, segments, fps)
     for frame, img in zip(scene_changes, get_snapshots(video, scene_changes)):
-        print(frame, img)
         cv2.imwrite("c/f{:06d}.jpg".format(frame), img)
 
     with open("c/text.json", "w", encoding="utf8") as f:

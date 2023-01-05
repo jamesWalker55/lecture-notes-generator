@@ -8,3 +8,4 @@ BASE_DIR = PACKAGE_DIR.parent
 
 TESTS_DIR = BASE_DIR / "tests"
 CACHE_DIR = BASE_DIR / ".cache"
+TEMPLATES_DIR = PACKAGE_DIR / "templates"

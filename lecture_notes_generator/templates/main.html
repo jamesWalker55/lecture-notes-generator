@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% macro img_hover_overlay(label, src, alt) -%}
+  <span class="font-bold text-white bg-black absolute text-sm tracking-tighter px-1 left-1 z-10 peer">{{ label }}</span>
+  {{ caller() }}
+  <img
+    class="hidden peer-hover:block fixed left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] w-[calc(100%-8rem)] lg:w-[768px] z-20 pointer-events-none"
+    src="{{ src }}" alt="{{ alt }}">
+{%- endmacro %}
+
+{% block content %}
+<main class="max-w-screen-lg mx-auto">
+  {% for scene in scenes %}
+    {% if scene.type == "subtitles" %}
+      <div class="flex flex-row gap-x-2 mx-2 even:bg-slate-50 py-1 my-0">
+        <div class="flex-none w-28 relative py-1">
+          {% call img_hover_overlay("IMG", "f{:06d}.jpg".format(scene.cuts[0]), "Frame {}".format(scene.cuts[0])) %}
+            <img class="h-0 min-h-full max-h-full w-full object-cover opacity-50" src="{{ "f{:06d}.jpg".format(scene.cuts[0]) }}" alt="Frame {{ scene.cuts[0] }}">
+          {% endcall %}
+        </div>
+        <div class="text-sm">
+          {% for segment in scene.segments %}{{ segment.text }}
+          {% endfor %}
+        </div>
+      </div>
+    {% elif scene.type == "slideshow" %}
+      <div class="flex flex-row justify-center gap-x-2 mx-2 even:bg-slate-50 py-1 my-0">
+        {% for cut in scene.cuts %}
+          <div class="flex-none w-16 relative py-1">
+            {% call img_hover_overlay("IMG", "f{:06d}.jpg".format(cut), "Frame {}".format(cut)) %}
+              <img class="object-cover opacity-50" src="{{ "f{:06d}.jpg".format(cut) }}" alt="Frame {{ cut }}">
+            {% endcall %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+    {% endif %}
+  {% endfor %}
+</main>
+{% endblock %}
