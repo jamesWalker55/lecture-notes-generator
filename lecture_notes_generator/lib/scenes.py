@@ -1,11 +1,13 @@
 import json
+from typing import NamedTuple
+
 from .transcribe import Segment
 from .utils import each_cons
 from .video import get_snapshots
 
-# [0] - the scene cut
-# [1] - list of text segments
-Scene = tuple[int, list[Segment]]
+class Scene(NamedTuple):
+    cut: int
+    segments: list[Segment]
 
 
 def pair(
@@ -23,18 +25,18 @@ def pair(
         start_time = start_frame / video_fps
         end_time = end_frame / video_fps
 
-        current_scene: Scene = (start_frame, [])
+        current_scene = Scene(start_frame, [])
         scenes.append(current_scene)
 
         while len(segments) > 0:
             seg = segments[-1]
             if start_time <= seg["start"] < end_time:
-                current_scene[1].append(segments.pop())
+                current_scene.segments.append(segments.pop())
             else:
                 break
 
     # if there are any remaining segments, add them to the final scene
-    final_scene: Scene = (scene_change_frames[-1], segments.copy())
+    final_scene = Scene(scene_change_frames[-1], segments.copy())
     scenes.append(final_scene)
 
     return scenes
