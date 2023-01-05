@@ -9,6 +9,25 @@ import numpy
 from .paths import CACHE_DIR
 
 
+def parse_duration(text):
+    """Parse a duration like '09:12.160' into a number"""
+    try:
+        match text.split(":"):
+            case h, m, s:
+                h = int(h)
+                m = int(m)
+                s = float(s)
+                return h * 60**2 + m * 60 + s
+            case m, s:
+                m = int(m)
+                s = float(s)
+                return m * 60 + s
+            case s:
+                return float(s)
+    except ValueError as e:
+        raise ValueError(f"Invalid duration string: {text}")
+
+
 def each_cons(it, n, pad_first_iteration=False):
     """
     - pad_first_iteration:
