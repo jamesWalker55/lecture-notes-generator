@@ -77,6 +77,48 @@ def frames_absolute_diff(cap):
     return result
 
 
+def detect_scene_changes(
+    cap,
+    height=None,
+    threshold=None,
+    distance=None,
+    prominence=None,
+    width=None,
+    wlen=None,
+    rel_height=0.5,
+    plateau_size=None,
+    _cache_name=None,
+):
+    """
+    Return the frame numbers where scene changes occur in a given video. All kwargs are for the
+    `scipy.signal.find_peaks()` function:
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html#scipy-signal-find-peaks
+
+    - height: required height of peaks (absolute height)
+    - threshold: required height of peaks (relative to neighboring samples)
+    - distance: required horizontal distance between peaks
+    - prominence: required prominence of peaks, "how much a peak stands out from the surrounding baseline of the signal"
+    - width: required width of peaks
+    - wlen: used for calculating peak prominence
+    - rel_height: used for calculating peak width
+    """
+    diff = frames_absolute_diff(cap, _cache_name=_cache_name)
+
+    # find and plot the peaks
+    peaks = scipy.signal.find_peaks(
+        diff,
+        height=height,
+        threshold=threshold,
+        distance=distance,
+        prominence=prominence,
+        width=width,
+        wlen=wlen,
+        rel_height=rel_height,
+        plateau_size=plateau_size,
+    )
+    return [0, *(x + 1 for x in peaks[0])]
+
+
 def get_snapshots(cap, frames: list[int]):
     frames = sorted(frames)
     snapshots = []
@@ -128,17 +170,12 @@ if __name__ == "__main__":
 
     video_path = TESTS_DIR / "video.mp4"
     video = cv2.VideoCapture(str(video_path))
-    diff = frames_absolute_diff(video, _cache_name=video_path)
-
-    # plot result in a graph
-    plt.plot(diff)
-
-    # find and plot the peaks
-    peaks = scipy.signal.find_peaks(diff, distance=30, threshold=12)
-    scene_changes = [0, *(x + 1 for x in peaks[0])]
-
-    for x in scene_changes:
-        plt.plot(x, diff[x], "yo")
+    scene_changes = detect_scene_changes(
+        video,
+        distance=30,
+        threshold=12,
+        _cache_name=video_path,
+    )
 
     comparisons = get_comparison_snapshots(video, scene_changes)
     count = 0
