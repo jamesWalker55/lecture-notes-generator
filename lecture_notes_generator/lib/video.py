@@ -6,7 +6,7 @@ from tqdm import tqdm
 from .utils import cached, each_cons
 
 
-def every_frame(cap):
+def _every_frame(cap):
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     start_pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
 
@@ -28,7 +28,7 @@ def every_frame(cap):
     cap.release()
 
 
-def every_n_frames(cap, n):
+def _every_n_frames(cap, n):
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     start_pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
 
@@ -65,7 +65,7 @@ def frames_absolute_diff(path):
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    for prev_frame, frame in each_cons(every_frame(cap), 2):
+    for prev_frame, frame in each_cons(_every_frame(cap), 2):
         diff = cv2.absdiff(prev_frame, frame)
 
         # normalize diff according to video size, so that it is consistent across different resolutions
