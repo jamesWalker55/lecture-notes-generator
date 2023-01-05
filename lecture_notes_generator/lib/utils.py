@@ -3,10 +3,8 @@ import os
 import re
 from collections import deque
 from functools import wraps
-
-import numpy
-
-from .paths import CACHE_DIR
+from pathlib import Path
+from typing import Any, Callable, TextIO
 
 
 def parse_duration(text):
@@ -64,63 +62,33 @@ def each_cons(it, n, pad_first_iteration=False):
         yield tuple(deq)
 
 
-def _cache_default_handler(o):
-    if isinstance(o, (numpy.int64, numpy.uint32)):
-        return int(o)
-    raise TypeError(o.__class__)
+def file_cache(
+    path_func: Callable[..., Path],
+    dump_func: Callable[[Any, TextIO], None],
+    load_func: Callable[[TextIO], Any],
+):
+    """Retrieve values from a file if the path exists, otherwise save output of the function to file"""
 
+    def wrapper(func):
+        @wraps(func)
+        def wrapped_func(*args, **kwargs):
+            cache_path = Path(path_func(*args, **kwargs))
+            if cache_path.exists():
+                print(f"Loading from cached file: {cache_path}")
+                try:
+                    with open(cache_path, "r", encoding="utf8") as f:
+                        return load_func(f)
+                except Exception as e:
+                    print("Failed to load from cached file.")
+                    raise e
 
-def cached_value(func, path):
-    # Try to load existing cache
-    try:
-        if os.path.exists(path):
-            with open(path, "r", encoding="utf8") as f:
-                return json.load(f)
-    except Exception as e:
-        pass
+            value = func(*args, **kwargs)
 
-    # Make sure cache parent folder exists
-    try:
-        os.mkdir(os.path.join(path, ".."))
-    except FileExistsError:
-        pass
+            with open(cache_path, "w", encoding="utf8") as f:
+                dump_func(value, f)
 
-    # Call the function
-    value = func()
+            return value
 
-    # Save the value to cache
-    with open(path, "w", encoding="utf8") as f:
-        json.dump(value, f, default=_cache_default_handler)
+        return wrapped_func
 
-    return value
-
-
-def sanitize_text_for_path(text):
-    return "".join([c for c in text if re.match(r"\w", c)])
-
-
-def cached(func):
-    @wraps(func)
-    def wrapped_func(*args, **kwargs):
-        output_stem = None
-
-        if "_cache_name" in kwargs:
-            if kwargs["_cache_name"] is not None:
-                output_stem = sanitize_text_for_path(str(kwargs["_cache_name"]))
-
-            del kwargs["_cache_name"]
-
-        if output_stem is None:
-            args_str = "_".join(str(x) for x in args)
-            kwargs_str = "_".join(f"{k}={v}" for k, v in kwargs.items())
-            output_stem = sanitize_text_for_path(f"{args_str}_{kwargs_str}")
-
-        output_stem = f"{func.__name__}_{output_stem}"
-        output_path = (CACHE_DIR / output_stem).with_suffix(".json")
-
-        return cached_value(
-            lambda: func(*args, **kwargs),
-            output_path,
-        )
-
-    return wrapped_func
+    return wrapper
