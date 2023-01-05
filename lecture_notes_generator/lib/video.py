@@ -89,7 +89,7 @@ def detect_scene_changes(
     rel_height=0.5,
     plateau_size=None,
     _cache_name=None,
-):
+) -> list[int]:
     """
     Return the frame numbers where scene changes occur in a given video. All kwargs are for the
     `scipy.signal.find_peaks()` function:
