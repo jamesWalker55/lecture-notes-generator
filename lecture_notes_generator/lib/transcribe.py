@@ -33,7 +33,7 @@ write_vtt: Callable[[Iterator[FullSegment], TextIO], None]
 @cached
 def transcribe(
     path, model="large", language="en", initial_prompt=None
-) -> tuple[str, list[FullSegment]]:
+) -> list[Segment]:
     path = str(path)
 
     model = whisper.load_model(model)
@@ -46,7 +46,7 @@ def transcribe(
         initial_prompt=initial_prompt,
     )
 
-    return result["text"], result["segments"]
+    return result["segments"]
 
 
 if __name__ == "__main__":
@@ -54,11 +54,10 @@ if __name__ == "__main__":
     from .paths import TESTS_DIR
 
     path = TESTS_DIR / "video.mp4"
-    text, segments = transcribe(
+    segments = transcribe(
         path,
         model="tiny",
         initial_prompt="Hello. Welcome to the Science education channel.",
     )
 
-    print(text)
     print(segments)

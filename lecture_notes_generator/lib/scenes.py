@@ -89,7 +89,7 @@ if __name__ == "__main__":
         _cache_name=video_path,
     )
 
-    text, segments = transcribe(
+    segments = transcribe(
         video_path,
         model="tiny",
         initial_prompt="Hello. Welcome to the Science education channel.",
