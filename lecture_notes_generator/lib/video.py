@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import scipy.signal
 from tqdm import tqdm
 
 from .utils import cached, each_cons
@@ -161,7 +162,6 @@ def get_comparison_snapshots(cap, frames: list[int]):
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    import scipy.signal
 
     from .paths import TESTS_DIR
 
