@@ -3,7 +3,7 @@ import json
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .paths import TEMPLATES_DIR
-from .scenes import Scene, group
+from .scenes import Scene, _group
 
 env = Environment(
     loader=FileSystemLoader(TEMPLATES_DIR),
@@ -13,8 +13,9 @@ env = Environment(
 with open(R"D:\Programming\lecture-transcriber\c\text.json", "r", encoding="utf8") as f:
     scenes = json.load(f)
 
+
 scenes = [Scene(*x) for x in scenes]
-scenes = group(scenes)
+scenes = _group(scenes)
 template = env.get_template("main.html")
 html = template.render(scenes=scenes)
 

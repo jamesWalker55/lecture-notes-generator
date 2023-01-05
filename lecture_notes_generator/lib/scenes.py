@@ -17,11 +17,13 @@ class RenderScene(NamedTuple):
     segments: list[FullSegment]
 
 
-def pair(
+def _pair(
     scene_change_frames: list[int],
     segments: list[FullSegment],
     video_fps: int | float,
 ):
+    """Pair a list of scene change frames, and a list of text segments"""
+
     scene_change_frames = sorted(scene_change_frames)
     # sort segments in reverse order
     segments = sorted(segments, key=lambda x: x["start"], reverse=True)
@@ -49,7 +51,9 @@ def pair(
     return scenes
 
 
-def group(scenes: list[Scene]):
+def _group(scenes: list[Scene]):
+    """Group the pairs of scenes and text into batches"""
+
     render_scenes: list[RenderScene] = []
     current_slideshow_scene = None
     for sc in scenes:
@@ -69,6 +73,16 @@ def group(scenes: list[Scene]):
                 )
             )
     return render_scenes
+
+
+def generate_scenes(
+    scene_change_frames: list[int],
+    segments: list[FullSegment],
+    video_fps: int | float,
+):
+    """Pair a list of scene change frames, and a list of text segments"""
+    scenes = _pair(scene_change_frames, segments, video_fps)
+    return _group(scenes)
 
 
 if __name__ == "__main__":
@@ -97,7 +111,7 @@ if __name__ == "__main__":
 
     fps = float(video.get(cv2.CAP_PROP_FPS))
 
-    scenes = pair(scene_changes, segments, fps)
+    scenes = _pair(scene_changes, segments, fps)
     for frame, img in zip(scene_changes, get_snapshots(video, scene_changes)):
         cv2.imwrite("c/f{:06d}.jpg".format(frame), img)
 
