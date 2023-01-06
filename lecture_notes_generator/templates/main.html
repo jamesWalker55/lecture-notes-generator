@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% macro img_hover_overlay(label, src, alt) -%}
-  <span class="font-bold text-white bg-black absolute text-sm tracking-tighter px-1 left-1 z-10 peer">{{ label }}</span>
+  <span class="font-bold text-white bg-black absolute text-sm tracking-tighter px-1 left-1 z-10 peer select-none">{{ label }}</span>
   {{ caller() }}
   <img
-    class="hidden peer-hover:block fixed left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] w-[calc(100%-8rem)] lg:w-[768px] z-20 pointer-events-none"
+    class="hidden peer-hover:block fixed left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] w-[calc(100%-8rem)] lg:w-[768px] z-20 select-none pointer-events-none"
     src="{{ src }}" alt="{{ alt }}">
 {%- endmacro %}
 
@@ -22,7 +22,7 @@
           {% set img_src = frames_dir / "f{:06d}.jpg".format(scene.cuts[0]) %}
           {% set img_alt = "Frame {}".format(scene.cuts[0]) %}
           {% call img_hover_overlay("IMG", img_src, img_alt) %}
-            <img class="h-0 min-h-full max-h-full w-full object-cover opacity-50" src="{{ img_src }}" alt="{{ img_alt }}">
+            <img class="h-0 min-h-full max-h-full w-full object-cover opacity-50 select-none" src="{{ img_src }}" alt="{{ img_alt }}">
           {% endcall %}
         </div>
         <div class="text-sm">
@@ -37,7 +37,7 @@
             {% set img_src = frames_dir / "f{:06d}.jpg".format(cut) %}
             {% set img_alt = "Frame {}".format(cut) %}
             {% call img_hover_overlay("IMG", img_src, img_alt) %}
-              <img class="object-cover opacity-50" src="{{ img_src }}" alt="{{img_alt}}">
+              <img class="object-cover opacity-50 select-none" src="{{ img_src }}" alt="{{img_alt}}">
             {% endcall %}
           </div>
         {% endfor %}
