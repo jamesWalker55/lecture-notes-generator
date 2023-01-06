@@ -83,7 +83,10 @@ def _frames_absolute_diff_path(video_path):
     _frames_absolute_diff_path, _frames_absolute_diff_dump, _frames_absolute_diff_load
 )
 def frames_absolute_diff(path):
-    cap = cv2.VideoCapture(path)
+    if isinstance(path, Path):
+        cap = cv2.VideoCapture(str(path))
+    else:
+        cap = cv2.VideoCapture(path)
 
     result = []
     count = 0
@@ -149,7 +152,10 @@ def detect_scene_changes(
 
 
 def get_snapshots(path, frames: list[int]):
-    cap = cv2.VideoCapture(path)
+    if isinstance(path, Path):
+        cap = cv2.VideoCapture(str(path))
+    else:
+        cap = cv2.VideoCapture(path)
 
     snapshots = []
 
@@ -164,7 +170,10 @@ def get_snapshots(path, frames: list[int]):
 
 
 def get_comparison_snapshots(path, frames: list[int]):
-    cap = cv2.VideoCapture(path)
+    if isinstance(path, Path):
+        cap = cv2.VideoCapture(str(path))
+    else:
+        cap = cv2.VideoCapture(path)
 
     snapshots = []
 
