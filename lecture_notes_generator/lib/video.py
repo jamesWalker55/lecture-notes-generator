@@ -201,6 +201,17 @@ def get_comparison_snapshots(path, frames: list[int]):
     return snapshots
 
 
+def export_snapshots(path, frames: list[int], output_folder):
+    output_folder = Path(output_folder)
+    output_folder.mkdir(exist_ok=True)
+
+    snapshots = get_snapshots(path, frames)
+
+    for i, img in snapshots:
+        img_path = output_folder / f"f{i:06d}.jpg"
+        cv2.imwrite(str(img_path), img)
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
