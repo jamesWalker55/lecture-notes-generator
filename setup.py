@@ -7,7 +7,9 @@ setup(
     author="James Walker",
     author_email="james.chunho@gmail.com",
     license="MIT",
-    packages=["lecture_notes_generator"],
+    # Let setuptools detect packages automatically
+    # https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+    # packages=["lecture_notes_generator"],
     install_requires=[
         "opencv-python",
         "tqdm",
