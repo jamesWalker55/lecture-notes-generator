@@ -90,14 +90,13 @@ if __name__ == "__main__":
 
     from .paths import TESTS_DIR
     from .transcribe import transcribe
-    from .utils import _cache_default_handler
     from .video import detect_scene_changes
 
     video_path = TESTS_DIR / "video.mp4"
     video = cv2.VideoCapture(str(video_path))
 
     scene_changes = detect_scene_changes(
-        video,
+        str(video_path),
         distance=30,
         threshold=12,
         _cache_name=video_path,
@@ -112,8 +111,5 @@ if __name__ == "__main__":
     fps = float(video.get(cv2.CAP_PROP_FPS))
 
     scenes = _pair(scene_changes, segments, fps)
-    for frame, img in get_snapshots(video, scene_changes):
+    for frame, img in get_snapshots(str(video_path), scene_changes):
         cv2.imwrite("c/f{:06d}.jpg".format(frame), img)
-
-    with open("c/text.json", "w", encoding="utf8") as f:
-        json.dump(scenes, f, indent=2, default=_cache_default_handler)
