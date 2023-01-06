@@ -31,7 +31,7 @@ def get_parser():
     gp.add_argument("--diff-width", "-dw", type=float, default=get_default_value(detect_scene_changes, 'width'), help="required width of peaks")
     gp.add_argument("--diff-wlen", "-dl", type=float, default=get_default_value(detect_scene_changes, 'wlen'), help="used for calculating peak prominence")
     gp.add_argument("--diff-rel-height", "-dr", type=float, default=get_default_value(detect_scene_changes, 'rel_height'), help="used for calculating peak width")
-    gp.add_argument("--diff-plateau-size", "-ds", type=float, default=get_default_value(detect_scene_changes, 'plateau_size'))
+    gp.add_argument("--diff-plateau-size", "-ds", type=float, default=get_default_value(detect_scene_changes, 'plateau_size'), help="\"Required size of the flat top of peaks in samples\"")
 
     # fmt: on
 

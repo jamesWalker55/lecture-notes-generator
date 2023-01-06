@@ -142,6 +142,7 @@ def detect_scene_changes(
     - width: required width of peaks
     - wlen: used for calculating peak prominence
     - rel_height: used for calculating peak width
+    - plateau_size: "Required size of the flat top of peaks in samples"
     """
     diff = frames_absolute_diff(path)
 
