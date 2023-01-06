@@ -8,7 +8,7 @@ from .lib.render import render_scenes
 from .lib.scenes import generate_scenes
 from .lib.transcribe import transcribe
 from .lib.utils import get_default_value
-from .lib.video import detect_scene_changes, export_snapshots, get_fps
+from .lib.video import detect_scene_changes, get_snapshots, export_snapshots, get_fps
 
 
 def get_parser():
@@ -78,7 +78,8 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict):
     scene_cuts = detect_scene_changes(path, **scene_kwargs)
     print(f"Detected {len(scene_cuts)} scene cuts")
     # save screenshots of scene cuts to path
-    export_snapshots(path, scene_cuts, snapshot_dir)
+    snapshots = get_snapshots(path, scene_cuts)
+    export_snapshots(snapshots, snapshot_dir)
 
     # group them into scenes
     scenes = generate_scenes(scene_cuts, segments, fps)

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Any
 
 import cv2
 import numpy as np
@@ -210,12 +211,7 @@ def get_comparison_snapshots(path, frames: list[int]):
     return snapshots
 
 
-def export_snapshots(path, frames: list[int], output_folder):
-    output_folder = Path(output_folder)
-    output_folder.mkdir(exist_ok=True)
-
-    snapshots = get_snapshots(path, frames)
-
+def export_snapshots(snapshots: list[tuple[int, Any]], output_folder):
     for i, img in snapshots:
         img_path = output_folder / f"f{i:06d}.jpg"
         cv2.imwrite(str(img_path), img)
