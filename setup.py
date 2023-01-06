@@ -14,6 +14,9 @@ setup(
         "opencv-python",
         "tqdm",
         "whisper @ git+https://github.com/openai/whisper.git",
+        "Jinja2",
+        "webvtt-py",
+        "scipy",
     ],
     zip_safe=False,
 )
