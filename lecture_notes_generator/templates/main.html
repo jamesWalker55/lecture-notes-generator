@@ -14,8 +14,10 @@
     {% if scene.type == "subtitles" %}
       <div class="flex flex-row gap-x-2 mx-2 even:bg-slate-50 py-1 my-0">
         <div class="flex-none w-28 relative py-1">
-          {% call img_hover_overlay("IMG", "f{:06d}.jpg".format(scene.cuts[0]), "Frame {}".format(scene.cuts[0])) %}
-            <img class="h-0 min-h-full max-h-full w-full object-cover opacity-50" src="{{ "f{:06d}.jpg".format(scene.cuts[0]) }}" alt="Frame {{ scene.cuts[0] }}">
+          {% set img_src = "f{:06d}.jpg".format(scene.cuts[0]) %}
+          {% set img_alt = "Frame {}".format(scene.cuts[0]) %}
+          {% call img_hover_overlay("IMG", img_src, img_alt) %}
+            <img class="h-0 min-h-full max-h-full w-full object-cover opacity-50" src="{{ img_src }}" alt="{{ img_alt }}">
           {% endcall %}
         </div>
         <div class="text-sm">
@@ -27,8 +29,10 @@
       <div class="flex flex-row justify-center gap-x-2 mx-2 even:bg-slate-50 py-1 my-0">
         {% for cut in scene.cuts %}
           <div class="flex-none w-16 relative py-1">
-            {% call img_hover_overlay("IMG", "f{:06d}.jpg".format(cut), "Frame {}".format(cut)) %}
-              <img class="object-cover opacity-50" src="{{ "f{:06d}.jpg".format(cut) }}" alt="Frame {{ cut }}">
+            {% set img_src = "f{:06d}.jpg".format(cut) %}
+            {% set img_alt = "Frame {}".format(cut) %}
+            {% call img_hover_overlay("IMG", img_src, img_alt) %}
+              <img class="object-cover opacity-50" src="{{ img_src }}" alt="{{img_alt}}">
             {% endcall %}
           </div>
         {% endfor %}
