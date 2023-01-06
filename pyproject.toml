@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lecture_notes_generator"
+version = "0.0.1"
+dependencies = [
+    "opencv-python",
+    "tqdm",
+    "whisper @ git+https://github.com/openai/whisper.git",
+    "Jinja2",
+    "webvtt-py",
+    "scipy",
+]
+
+[project.scripts]
+lng = "lecture_notes_generator:cli"
