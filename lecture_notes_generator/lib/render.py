@@ -7,7 +7,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from .paths import TEMPLATES_DIR, TESTS_DIR
 from .scenes import Scene, generate_scenes
 from .transcribe import transcribe
-from .video import detect_scene_changes, export_snapshots
+from .video import detect_scene_changes, export_snapshots, get_fps
 
 ENV = Environment(
     loader=FileSystemLoader(TEMPLATES_DIR),
@@ -36,13 +36,7 @@ if __name__ == "__main__":
     def temp(
         path, transcribe_model="large", transcribe_language="en", initial_prompt=None
     ):
-        # get video framerate
-        if isinstance(path, Path):
-            cap = cv2.VideoCapture(str(path))
-        else:
-            cap = cv2.VideoCapture(path)
-
-        fps = float(cap.get(cv2.CAP_PROP_FPS))
+        fps = get_fps(path)
 
         # some arguments
         path = Path(path)

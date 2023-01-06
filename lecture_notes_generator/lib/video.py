@@ -109,6 +109,15 @@ def frames_absolute_diff(path):
     return result
 
 
+def get_fps(path):
+    if isinstance(path, Path):
+        cap = cv2.VideoCapture(str(path))
+    else:
+        cap = cv2.VideoCapture(path)
+
+    return float(cap.get(cv2.CAP_PROP_FPS))
+
+
 def detect_scene_changes(
     path,
     height=None,
