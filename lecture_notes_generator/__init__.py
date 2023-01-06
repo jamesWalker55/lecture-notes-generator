@@ -8,7 +8,13 @@ from .lib.render import render_scenes
 from .lib.scenes import generate_scenes
 from .lib.transcribe import transcribe
 from .lib.utils import get_default_value
-from .lib.video import detect_scene_changes, get_snapshots, export_snapshots, get_fps
+from .lib.video import (
+    detect_scene_changes,
+    export_snapshots,
+    get_delayed_snapshots,
+    get_fps,
+    get_snapshots,
+)
 
 
 def get_parser():
@@ -33,6 +39,9 @@ def get_parser():
     gp.add_argument("--diff-rel-height", "-dr", type=float, default=get_default_value(detect_scene_changes, 'rel_height'), help="used for calculating peak width")
     gp.add_argument("--diff-plateau-size", "-ds", type=float, default=get_default_value(detect_scene_changes, 'plateau_size'), help="\"Required size of the flat top of peaks in samples\"")
 
+    gp = parser.add_argument_group("Other")
+    gp.add_argument("--snapshot-delay", "-sd", type=int, default=15, help="wait a certain amount of frames before taking a snapshot for the scene cut")
+
     # fmt: on
 
     return parser
@@ -55,11 +64,14 @@ def cli():
         "rel_height": args.diff_rel_height,
         "plateau_size": args.diff_plateau_size,
     }
+    other_kwargs = {
+        "snapshot_delay": args.snapshot_delay,
+    }
     for p in args.paths:
-        process_path(p, whisper_kwargs, scene_kwargs)
+        process_path(p, whisper_kwargs, scene_kwargs, other_kwargs)
 
 
-def process_path(path, whisper_kwargs: dict, scene_kwargs: dict):
+def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: dict):
     path = Path(path)
 
     # get fps of path
@@ -78,7 +90,12 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict):
     scene_cuts = detect_scene_changes(path, **scene_kwargs)
     print(f"Detected {len(scene_cuts)} scene cuts")
     # save screenshots of scene cuts to path
-    snapshots = get_snapshots(path, scene_cuts)
+    if "snapshot_delay" in other_kwargs:
+        snapshots = get_delayed_snapshots(
+            path, scene_cuts, other_kwargs["snapshot_delay"]
+        )
+    else:
+        snapshots = get_snapshots(path, scene_cuts)
     export_snapshots(snapshots, snapshot_dir)
 
     # group them into scenes
