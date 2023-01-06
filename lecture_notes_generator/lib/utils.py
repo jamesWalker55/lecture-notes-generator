@@ -83,9 +83,9 @@ def file_cache(
 
     def wrapper(func):
         @wraps(func)
-        def wrapped_func(*args, **kwargs):
+        def wrapped_func(*args, skip_loading=False, **kwargs):
             cache_path = Path(path_func(*args, **kwargs))
-            if cache_path.exists():
+            if not skip_loading and cache_path.exists():
                 print(f"Loading from cached file: {cache_path}")
                 try:
                     return load_func(cache_path)
