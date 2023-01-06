@@ -83,7 +83,7 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict):
     # group them into scenes
     scenes = generate_scenes(scene_cuts, segments, fps)
 
-    render_scenes(scenes, html_path, snapshot_dir)
+    render_scenes(scenes, path.stem, html_path, snapshot_dir)
 
 
 if __name__ == "__main__":

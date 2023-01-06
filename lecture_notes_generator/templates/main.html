@@ -8,8 +8,13 @@
     src="{{ src }}" alt="{{ alt }}">
 {%- endmacro %}
 
+{% block title %}
+{{ title }}
+{% endblock %}
+
 {% block content %}
 <main class="max-w-screen-lg mx-auto">
+  <h1 class="text-center font-bold text-xl my-3">{{ title }}</h1>
   {% for scene in scenes %}
     {% if scene.type == "subtitles" %}
       <div class="flex flex-row gap-x-2 mx-2 even:bg-slate-50 py-1 my-0">

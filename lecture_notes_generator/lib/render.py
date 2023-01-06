@@ -15,7 +15,7 @@ ENV = Environment(
 )
 
 
-def render_scenes(scenes, html_path, frames_dir):
+def render_scenes(scenes, title, html_path, frames_dir):
     html_path = Path(html_path)
     frames_dir = Path(frames_dir)
 
@@ -24,7 +24,7 @@ def render_scenes(scenes, html_path, frames_dir):
 
     # render the site
     template = ENV.get_template("main.html")
-    html = template.render(scenes=scenes, frames_dir=frames_dir)
+    html = template.render(scenes=scenes, frames_dir=frames_dir, title=title)
 
     # save the site
     with open(html_path, "w", encoding="utf8") as f:
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         # group them into scenes
         scenes = generate_scenes(scene_cuts, segments, fps)
 
-        render_scenes(scenes, html_path, snapshot_dir)
+        render_scenes(scenes, path.stem, html_path, snapshot_dir)
 
     video_path = TESTS_DIR / "video.mp4"
     temp(video_path, transcribe_model="tiny")
