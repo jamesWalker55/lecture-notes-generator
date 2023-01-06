@@ -10,6 +10,11 @@ setup(
     # Let setuptools detect packages automatically
     # https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
     # packages=["lecture_notes_generator"],
+    # Include non-Python files, e.g. the HTML files in ./templates/
+    include_package_data=True,
+    package_data={
+        "lecture_notes_generator": ["templates/*.html"],
+    },
     install_requires=[
         "opencv-python",
         "tqdm",
