@@ -129,6 +129,7 @@ def detect_scene_changes(
     wlen=None,
     rel_height=0.5,
     plateau_size=None,
+    skip_loading=False,
 ) -> list[int]:
     """
     Return the frame numbers where scene changes occur in a given video. All kwargs are for the
@@ -144,7 +145,7 @@ def detect_scene_changes(
     - rel_height: used for calculating peak width
     - plateau_size: "Required size of the flat top of peaks in samples"
     """
-    diff = frames_absolute_diff(path)
+    diff = frames_absolute_diff(path, skip_loading=skip_loading)
 
     # find and plot the peaks
     peaks = scipy.signal.find_peaks(

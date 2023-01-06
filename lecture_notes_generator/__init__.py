@@ -39,6 +39,10 @@ def get_parser():
     gp.add_argument("--diff-rel-height", "-dr", type=float, default=get_default_value(detect_scene_changes, 'rel_height'), help="used for calculating peak width")
     gp.add_argument("--diff-plateau-size", "-ds", type=float, default=get_default_value(detect_scene_changes, 'plateau_size'), help="\"Required size of the flat top of peaks in samples\"")
 
+    gp = parser.add_argument_group("Cache")
+    gp.add_argument("--retranscribe", "-rt", action="store_true", help="ignore any existing subtitle files and re-transcribe the video")
+    gp.add_argument("--rediff", "-rd", action="store_true", help="ignore any existing absdiff files and rescan the video for frame differences")
+
     gp = parser.add_argument_group("Other")
     gp.add_argument("--snapshot-delay", "-sd", type=int, default=15, help="wait a certain amount of frames before taking a snapshot for the scene cut")
 
@@ -66,6 +70,8 @@ def cli():
     }
     other_kwargs = {
         "snapshot_delay": args.snapshot_delay,
+        "retranscribe": args.retranscribe,
+        "rediff": args.rediff,
     }
     for p in args.paths:
         process_path(p, whisper_kwargs, scene_kwargs, other_kwargs)
@@ -83,11 +89,15 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
     snapshot_dir = path.parent / f"frames_{path.stem}"
 
     # run whisper on video to get subtitles
-    segments = transcribe(path, **whisper_kwargs)
+    segments = transcribe(
+        path, **whisper_kwargs, skip_loading=other_kwargs["retranscribe"]
+    )
     print(f"Transcribed {len(segments)} segments")
 
     # detect scene cuts in the video
-    scene_cuts = detect_scene_changes(path, **scene_kwargs)
+    scene_cuts = detect_scene_changes(
+        path, **scene_kwargs, skip_loading=other_kwargs["rediff"]
+    )
     print(f"Detected {len(scene_cuts)} scene cuts")
     # save screenshots of scene cuts to path
     if "snapshot_delay" in other_kwargs:
