@@ -11,20 +11,24 @@ from typing import Any, Callable, TextIO
 def parse_duration(text):
     """Parse a duration like '09:12.160' into a number"""
     try:
-        match text.split(":"):
-            case h, m, s:
-                h = int(h)
-                m = int(m)
-                s = float(s)
-                return h * 60**2 + m * 60 + s
-            case m, s:
-                m = int(m)
-                s = float(s)
-                return m * 60 + s
-            case s:
-                return float(s)
+        parts = text.split(":")
+        if len(parts) == 3:
+            h, m, s = parts
+            h = int(h)
+            m = int(m)
+            s = float(s)
+            return h * 60**2 + m * 60 + s
+        elif len(parts) == 2:
+            m, s = parts
+            m = int(m)
+            s = float(s)
+            return m * 60 + s
+        elif len(parts) == 1:
+            return float(parts[0])
     except ValueError as e:
-        raise ValueError(f"Invalid duration string: {text}")
+        pass
+
+    raise ValueError(f"Invalid duration string: {text}")
 
 
 def get_default_value(func, param: str):
