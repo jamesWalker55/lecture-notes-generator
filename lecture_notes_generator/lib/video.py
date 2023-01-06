@@ -121,8 +121,8 @@ def get_fps(path):
 def detect_scene_changes(
     path,
     height=None,
-    threshold=12,
-    distance=30,
+    threshold=3,
+    distance=20,
     prominence=None,
     width=None,
     wlen=None,
