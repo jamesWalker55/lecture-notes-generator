@@ -23,5 +23,6 @@ setup(
         "webvtt-py",
         "scipy",
     ],
+    entry_points={"console_scripts": ["lng = lecture_notes_generator:cli"]},
     zip_safe=False,
 )
