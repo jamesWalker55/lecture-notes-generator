@@ -112,8 +112,8 @@ def frames_absolute_diff(path):
 def detect_scene_changes(
     path,
     height=None,
-    threshold=None,
-    distance=None,
+    threshold=12,
+    distance=30,
     prominence=None,
     width=None,
     wlen=None,
