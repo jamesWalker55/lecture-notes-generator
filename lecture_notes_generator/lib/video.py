@@ -179,6 +179,26 @@ def get_snapshots(path, frames: list[int]):
     return snapshots
 
 
+def get_delayed_snapshots(path, frames: list[int], delay: int):
+    if isinstance(path, Path):
+        cap = cv2.VideoCapture(str(path))
+    else:
+        cap = cv2.VideoCapture(path)
+
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    snapshots = []
+
+    for f in frames:
+        delayed_f = min(f + delay, total_frames)
+        cap.set(cv2.CAP_PROP_POS_FRAMES, delayed_f)
+        ok, frame = cap.read()
+        if not ok:
+            raise RuntimeError(f"Failed to get frame #{delayed_f} of video.")
+        snapshots.append((f, frame))
+
+    return snapshots
+
+
 def get_comparison_snapshots(path, frames: list[int]):
     if isinstance(path, Path):
         cap = cv2.VideoCapture(str(path))
