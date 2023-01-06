@@ -1,3 +1,4 @@
+import inspect
 import json
 import os
 import re
@@ -24,6 +25,17 @@ def parse_duration(text):
                 return float(s)
     except ValueError as e:
         raise ValueError(f"Invalid duration string: {text}")
+
+
+def get_default_value(func, param: str):
+    sig = inspect.signature(func)
+    if param not in sig.parameters:
+        raise ValueError(f"Parameter {param!r} doesn't exist in function {func!r}")
+    param = sig.parameters[param]
+    value = param.default
+    if value == inspect._empty:
+        raise ValueError(f"Parameter {param!r} in function {func!r} has no default value")
+    return value
 
 
 def each_cons(it, n, pad_first_iteration=False):
