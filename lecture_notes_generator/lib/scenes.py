@@ -112,7 +112,7 @@ if __name__ == "__main__":
     fps = float(video.get(cv2.CAP_PROP_FPS))
 
     scenes = _pair(scene_changes, segments, fps)
-    for frame, img in zip(scene_changes, get_snapshots(video, scene_changes)):
+    for frame, img in get_snapshots(video, scene_changes):
         cv2.imwrite("c/f{:06d}.jpg".format(frame), img)
 
     with open("c/text.json", "w", encoding="utf8") as f:

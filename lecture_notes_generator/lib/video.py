@@ -158,7 +158,7 @@ def get_snapshots(path, frames: list[int]):
         ok, frame = cap.read()
         if not ok:
             raise RuntimeError(f"Failed to get frame #{f} of video.")
-        snapshots.append(frame)
+        snapshots.append((f, frame))
 
     return snapshots
 
@@ -178,7 +178,7 @@ def get_comparison_snapshots(path, frames: list[int]):
             ok, zero_frame = cap.read()
             if not ok:
                 raise RuntimeError("Failed to get first frame of video.")
-            snapshots.append((black_frame, zero_frame))
+            snapshots.append((0, black_frame, zero_frame))
         else:
             cap.set(cv2.CAP_PROP_POS_FRAMES, f - 1)
             ok, before_frame = cap.read()
@@ -187,7 +187,7 @@ def get_comparison_snapshots(path, frames: list[int]):
             ok, after_frame = cap.read()
             if not ok:
                 raise RuntimeError(f"Failed to get frame #{f} of video.")
-            snapshots.append((before_frame, after_frame))
+            snapshots.append((f, before_frame, after_frame))
 
     return snapshots
 
@@ -207,7 +207,7 @@ if __name__ == "__main__":
 
     comparisons = get_comparison_snapshots(str(video_path), scene_changes)
     count = 0
-    for before, after in tqdm(comparisons):
+    for _, before, after in tqdm(comparisons):
         joined = np.concatenate((before, after), axis=1)
         cv2.imwrite("c/cut{:d}.jpg".format(count), joined)
         count += 1
