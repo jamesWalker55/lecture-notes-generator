@@ -7,6 +7,7 @@ from whisper.tokenizer import LANGUAGES
 from .lib.render import render_scenes
 from .lib.scenes import generate_scenes
 from .lib.transcribe import transcribe
+from .lib.utils import get_default_value
 from .lib.video import detect_scene_changes, export_snapshots, get_fps
 
 
@@ -18,19 +19,19 @@ def get_parser():
     parser.add_argument("paths", nargs="+", type=Path, help="path to the video files to transcribe")
 
     gp = parser.add_argument_group("Whisper subtitles transcription")
-    gp.add_argument("--model", "-m", choices=_MODELS.keys(), default="large", help="the model used to transcribe the audio")
-    gp.add_argument("--language", "-lang", choices=LANGUAGES.keys(), default="en", help="the language of the audio")
-    gp.add_argument("--initial-prompt", "-p", type=str, default=None, help="initial prompt for whisper transcription")
+    gp.add_argument("--model", "-m", choices=_MODELS.keys(), default=get_default_value(transcribe, 'model'), help="the model used to transcribe the audio")
+    gp.add_argument("--language", "-lang", choices=LANGUAGES.keys(), default=get_default_value(transcribe, 'language'), help="the language of the audio")
+    gp.add_argument("--initial-prompt", "-p", type=str, default=get_default_value(transcribe, 'initial_prompt'), help="initial prompt for whisper transcription")
 
     gp = parser.add_argument_group("Scene cut detection")
-    gp.add_argument("--diff-height", "-dh", type=float, default=None, help="required height of peaks (absolute height)")
-    gp.add_argument("--diff-threshold", "-dt", type=float, default=12, help="required height of peaks (relative to neighboring samples) (Default 12)")
-    gp.add_argument("--diff-distance", "-dd", type=float, default=30, help="required horizontal distance between peaks (Default 30)")
-    gp.add_argument("--diff-prominence", "-dp", type=float, default=None, help="required prominence of peaks, \"how much a peak stands out from the surrounding baseline of the signal\"")
-    gp.add_argument("--diff-width", "-dw", type=float, default=None, help="required width of peaks")
-    gp.add_argument("--diff-wlen", "-dl", type=float, default=None, help="used for calculating peak prominence")
-    gp.add_argument("--diff-rel-height", "-dr", type=float, default=0.5, help="used for calculating peak width (Default 0.5)")
-    gp.add_argument("--diff-plateau-size", "-ds", type=float, default=None)
+    gp.add_argument("--diff-height", "-dh", type=float, default=get_default_value(detect_scene_changes, 'height'), help="required height of peaks (absolute height)")
+    gp.add_argument("--diff-threshold", "-dt", type=float, default=get_default_value(detect_scene_changes, 'threshold'), help="required height of peaks (relative to neighboring samples)")
+    gp.add_argument("--diff-distance", "-dd", type=float, default=get_default_value(detect_scene_changes, 'distance'), help="required horizontal distance between peaks")
+    gp.add_argument("--diff-prominence", "-dp", type=float, default=get_default_value(detect_scene_changes, 'prominence'), help="required prominence of peaks, \"how much a peak stands out from the surrounding baseline of the signal\"")
+    gp.add_argument("--diff-width", "-dw", type=float, default=get_default_value(detect_scene_changes, 'width'), help="required width of peaks")
+    gp.add_argument("--diff-wlen", "-dl", type=float, default=get_default_value(detect_scene_changes, 'wlen'), help="used for calculating peak prominence")
+    gp.add_argument("--diff-rel-height", "-dr", type=float, default=get_default_value(detect_scene_changes, 'rel_height'), help="used for calculating peak width")
+    gp.add_argument("--diff-plateau-size", "-ds", type=float, default=get_default_value(detect_scene_changes, 'plateau_size'))
 
     # fmt: on
 
