@@ -78,6 +78,7 @@ def cli():
         "skip_notes": args.skip_notes,
     }
     for p in args.paths:
+        print(f"\nProcessing file: {p}")
         process_path(p, whisper_kwargs, scene_kwargs, other_kwargs)
 
 
