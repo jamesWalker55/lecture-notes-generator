@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, List, Tuple
 
 import cv2
 import numpy as np
@@ -130,7 +130,7 @@ def detect_scene_changes(
     rel_height=0.5,
     plateau_size=None,
     skip_loading=False,
-) -> list[int]:
+) -> List[int]:
     """
     Return the frame numbers where scene changes occur in a given video. All kwargs are for the
     `scipy.signal.find_peaks()` function:
@@ -162,7 +162,7 @@ def detect_scene_changes(
     return [0, *(x + 1 for x in peaks[0])]
 
 
-def get_snapshots(path, frames: list[int]):
+def get_snapshots(path, frames: List[int]):
     if isinstance(path, Path):
         cap = cv2.VideoCapture(str(path))
     else:
@@ -180,7 +180,7 @@ def get_snapshots(path, frames: list[int]):
     return snapshots
 
 
-def get_delayed_snapshots(path, frames: list[int], delay: int):
+def get_delayed_snapshots(path, frames: List[int], delay: int):
     if isinstance(path, Path):
         cap = cv2.VideoCapture(str(path))
     else:
@@ -200,7 +200,7 @@ def get_delayed_snapshots(path, frames: list[int], delay: int):
     return snapshots
 
 
-def get_comparison_snapshots(path, frames: list[int]):
+def get_comparison_snapshots(path, frames: List[int]):
     if isinstance(path, Path):
         cap = cv2.VideoCapture(str(path))
     else:
@@ -232,7 +232,7 @@ def get_comparison_snapshots(path, frames: list[int]):
     return snapshots
 
 
-def export_snapshots(snapshots: list[tuple[int, Any]], output_folder):
+def export_snapshots(snapshots: List[Tuple[int, Any]], output_folder):
     for i, img in snapshots:
         img_path = output_folder / f"f{i:06d}.jpg"
         cv2.imwrite(str(img_path), img)

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Iterator, TextIO, TypedDict
+from typing import Callable, Iterator, List, TextIO, TypedDict
 
 import webvtt
 import whisper
@@ -14,7 +14,7 @@ class FullSegment(TypedDict):
     start: float
     end: float
     text: str
-    tokens: list[int]
+    tokens: List[int]
     temperature: float
     avg_logprob: float
     compression_ratio: float
@@ -59,7 +59,7 @@ def _transcribe_path(video_path, **kwargs):
 @file_cache(_transcribe_path, _transcribe_dump, _transcribe_load)
 def transcribe(
     path, model="large", language="en", initial_prompt=None
-) -> list[Segment]:
+) -> List[Segment]:
     path = str(path)
 
     model = whisper.load_model(model)

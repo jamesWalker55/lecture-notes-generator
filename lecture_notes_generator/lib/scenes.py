@@ -1,4 +1,4 @@
-from typing import Literal, NamedTuple
+from typing import List, Literal, NamedTuple, Union
 
 from .transcribe import FullSegment
 from .utils import each_cons
@@ -7,19 +7,19 @@ from .video import get_snapshots
 
 class Scene(NamedTuple):
     cut: int
-    segments: list[FullSegment]
+    segments: List[FullSegment]
 
 
 class RenderScene(NamedTuple):
     type: Literal["subtitles", "slideshow"]
-    cuts: list[int]
-    segments: list[FullSegment]
+    cuts: List[int]
+    segments: List[FullSegment]
 
 
 def _pair(
-    scene_change_frames: list[int],
-    segments: list[FullSegment],
-    video_fps: int | float,
+    scene_change_frames: List[int],
+    segments: List[FullSegment],
+    video_fps: Union[int, float],
 ):
     """Pair a list of scene change frames, and a list of text segments"""
 
@@ -27,7 +27,7 @@ def _pair(
     # sort segments in reverse order
     segments = sorted(segments, key=lambda x: x["start"], reverse=True)
 
-    scenes: list[Scene] = []
+    scenes: List[Scene] = []
 
     for start_frame, end_frame in each_cons(scene_change_frames, 2):
         start_time = start_frame / video_fps
@@ -50,10 +50,10 @@ def _pair(
     return scenes
 
 
-def _group(scenes: list[Scene]):
+def _group(scenes: List[Scene]):
     """Group the pairs of scenes and text into batches"""
 
-    render_scenes: list[RenderScene] = []
+    render_scenes: List[RenderScene] = []
     current_slideshow_scene = None
     for sc in scenes:
         if len(sc.segments) == 0:
@@ -75,9 +75,9 @@ def _group(scenes: list[Scene]):
 
 
 def generate_scenes(
-    scene_change_frames: list[int],
-    segments: list[FullSegment],
-    video_fps: int | float,
+    scene_change_frames: List[int],
+    segments: List[FullSegment],
+    video_fps: Union[int, float],
 ):
     """Pair a list of scene change frames, and a list of text segments"""
     scenes = _pair(scene_change_frames, segments, video_fps)
