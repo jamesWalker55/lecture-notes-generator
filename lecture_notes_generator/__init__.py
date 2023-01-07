@@ -42,6 +42,7 @@ def get_parser():
     gp = parser.add_argument_group("Cache")
     gp.add_argument("--retranscribe", "-rt", action="store_true", help="ignore any existing subtitle files and re-transcribe the video")
     gp.add_argument("--rediff", "-rd", action="store_true", help="ignore any existing absdiff files and rescan the video for frame differences")
+    gp.add_argument("--skip-notes", "-s", action="store_true", help="skip generating the notes output and snapshots")
 
     gp = parser.add_argument_group("Other")
     gp.add_argument("--snapshot-delay", "-sd", type=int, default=15, help="wait a certain amount of frames before taking a snapshot for the scene cut")
@@ -72,6 +73,7 @@ def cli():
         "snapshot_delay": args.snapshot_delay,
         "retranscribe": args.retranscribe,
         "rediff": args.rediff,
+        "skip_notes": args.skip_notes,
     }
     for p in args.paths:
         process_path(p, whisper_kwargs, scene_kwargs, other_kwargs)
@@ -99,6 +101,11 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
         path, **scene_kwargs, skip_loading=other_kwargs["rediff"]
     )
     print(f"Detected {len(scene_cuts)} scene cuts")
+
+    # return early if we're skipping notes generation
+    if other_kwargs['skip_notes']:
+        return
+
     # save screenshots of scene cuts to path
     if "snapshot_delay" in other_kwargs:
         snapshots = get_delayed_snapshots(
