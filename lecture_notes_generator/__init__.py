@@ -113,6 +113,7 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
         )
     else:
         snapshots = get_snapshots(path, scene_cuts)
+    snapshot_dir.mkdir(exist_ok=True)
     export_snapshots(snapshots, snapshot_dir)
 
     # group them into scenes
