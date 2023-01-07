@@ -45,6 +45,7 @@ def get_parser():
 
     gp = parser.add_argument_group("Other")
     gp.add_argument("--snapshot-delay", "-sd", type=int, default=15, help="wait a certain amount of frames before taking a snapshot for the scene cut")
+    gp.add_argument("--transcribe-only", "-t", action="store_true", help="only transcribe the video and skip all other steps")
     gp.add_argument("--skip-notes", "-s", action="store_true", help="skip generating the notes output and snapshots")
 
     # fmt: on
@@ -73,6 +74,7 @@ def cli():
         "snapshot_delay": args.snapshot_delay,
         "retranscribe": args.retranscribe,
         "rediff": args.rediff,
+        "transcribe_only": args.transcribe_only,
         "skip_notes": args.skip_notes,
     }
     for p in args.paths:
@@ -94,7 +96,12 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
     segments = transcribe(
         path, **whisper_kwargs, skip_loading=other_kwargs["retranscribe"]
     )
+
+    # return early if we're only transcribing
     print(f"Transcribed {len(segments)} segments")
+
+    if other_kwargs['transcribe_only']:
+        return
 
     # detect scene cuts in the video
     scene_cuts = detect_scene_changes(
