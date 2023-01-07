@@ -38,7 +38,9 @@ def get_default_value(func, param: str):
     param = sig.parameters[param]
     value = param.default
     if value == inspect._empty:
-        raise ValueError(f"Parameter {param!r} in function {func!r} has no default value")
+        raise ValueError(
+            f"Parameter {param!r} in function {func!r} has no default value"
+        )
     return value
 
 
