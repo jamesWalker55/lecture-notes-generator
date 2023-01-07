@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import Callable, Iterator, TextIO, TypedDict
 

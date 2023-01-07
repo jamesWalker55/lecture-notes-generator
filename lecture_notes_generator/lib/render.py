@@ -1,11 +1,9 @@
-import json
 from pathlib import Path
 
-import cv2
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .paths import TEMPLATES_DIR, TESTS_DIR
-from .scenes import Scene, generate_scenes
+from .scenes import generate_scenes
 from .transcribe import transcribe
 from .video import detect_scene_changes, get_snapshots, export_snapshots, get_fps
 

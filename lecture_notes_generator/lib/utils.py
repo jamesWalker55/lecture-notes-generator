@@ -1,11 +1,8 @@
 import inspect
-import json
-import os
-import re
 from collections import deque
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, TextIO
+from typing import Any, Callable
 
 
 def parse_duration(text):
