@@ -77,7 +77,7 @@ def _frames_absolute_diff_load(path):
 
 def _frames_absolute_diff_path(video_path):
     video_path = Path(video_path)
-    return video_path.with_stem("absdiff_" + video_path.stem).with_suffix(".json")
+    return video_path.with_name(f"absdiff_{video_path.stem}.json")
 
 
 @file_cache(
