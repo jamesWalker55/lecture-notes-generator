@@ -8,7 +8,7 @@ version = "0.0.1"
 dependencies = [
     "opencv-python",
     "tqdm",
-    "whisper @ git+https://github.com/openai/whisper.git",
+    "openai-whisper @ git+https://github.com/openai/whisper.git",
     "Jinja2",
     "webvtt-py",
     "scipy",
