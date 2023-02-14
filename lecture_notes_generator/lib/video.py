@@ -190,7 +190,7 @@ def get_delayed_snapshots(path, frames: List[int], delay: int):
     snapshots = []
 
     for f in frames:
-        delayed_f = min(f + delay, total_frames)
+        delayed_f = min(f + delay, total_frames - 1)
         cap.set(cv2.CAP_PROP_POS_FRAMES, delayed_f)
         ok, frame = cap.read()
         if not ok:
