@@ -32,33 +32,6 @@ def _every_frame(cap):
     cap.release()
 
 
-def _every_n_frames(cap, n):
-    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    start_pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
-
-    countdown = 0
-    with tqdm(total=length, initial=start_pos) as pbar:
-        while cap.isOpened():
-            success, frame = cap.read()
-
-            if not success:
-                break
-
-            if countdown == 0:
-                countdown = n - 1
-                try:
-                    yield frame
-                except Exception as e:
-                    cap.release()
-                    raise e
-            else:
-                countdown -= 1
-
-            pbar.update(1)
-
-    cap.release()
-
-
 def _json_default_handler(o):
     if isinstance(o, (np.int64, np.uint32)):
         return int(o)
