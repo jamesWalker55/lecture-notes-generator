@@ -10,7 +10,7 @@ from .lib.transcribe import transcribe
 from .lib.utils import get_default_value
 from .lib.video import (
     detect_scene_changes,
-    export_snapshots,
+    _export_snapshots,
     get_snapshots,
     get_fps,
     get_snapshots,
@@ -122,7 +122,7 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
     else:
         snapshots = get_snapshots(path, scene_cuts)
     snapshot_dir.mkdir(exist_ok=True)
-    export_snapshots(snapshots, snapshot_dir)
+    _export_snapshots(snapshots, snapshot_dir)
 
     # group them into scenes
     scenes = generate_scenes(scene_cuts, segments, fps)

@@ -5,7 +5,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from .paths import TEMPLATES_DIR, TESTS_DIR
 from .scenes import generate_scenes
 from .transcribe import transcribe
-from .video import detect_scene_changes, get_snapshots, export_snapshots, get_fps
+from .video import detect_scene_changes, get_snapshots, _export_snapshots, get_fps
 
 ENV = Environment(
     loader=FileSystemLoader(TEMPLATES_DIR),
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         scene_cuts = detect_scene_changes(path)
         # save screenshots of scene cuts to path
         snapshots = get_snapshots(path, scene_cuts)
-        export_snapshots(snapshots, snapshot_dir)
+        _export_snapshots(snapshots, snapshot_dir)
 
         # group them into scenes
         scenes = generate_scenes(scene_cuts, segments, fps)

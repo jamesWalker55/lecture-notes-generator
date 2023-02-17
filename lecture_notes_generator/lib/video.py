@@ -182,7 +182,7 @@ def get_snapshots(path, frames: List[int], delay: int = 0):
     return snapshots
 
 
-def get_comparison_snapshots(path, frames: List[int]):
+def _get_comparison_snapshots(path, frames: List[int]):
     if isinstance(path, Path):
         cap = cv2.VideoCapture(str(path))
     else:
@@ -214,7 +214,7 @@ def get_comparison_snapshots(path, frames: List[int]):
     return snapshots
 
 
-def export_snapshots(snapshots: List[Tuple[int, Any]], output_folder):
+def _export_snapshots(snapshots: List[Tuple[int, Any]], output_folder):
     for i, img in snapshots:
         img_path = output_folder / f"f{i:06d}.jpg"
         cv2.imwrite(str(img_path), img)
@@ -233,7 +233,7 @@ if __name__ == "__main__":
         _cache_name=video_path,
     )
 
-    comparisons = get_comparison_snapshots(str(video_path), scene_changes)
+    comparisons = _get_comparison_snapshots(str(video_path), scene_changes)
     count = 0
     for _, before, after in tqdm(comparisons):
         joined = np.concatenate((before, after), axis=1)
