@@ -101,7 +101,7 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
     # return early if we're only transcribing
     print(f"Transcribed {len(segments)} segments")
 
-    if other_kwargs['transcribe_only']:
+    if other_kwargs["transcribe_only"]:
         return
 
     # detect scene cuts in the video
@@ -111,7 +111,7 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
     print(f"Detected {len(scene_cuts)} scene cuts")
 
     # return early if we're skipping notes generation
-    if other_kwargs['skip_notes']:
+    if other_kwargs["skip_notes"]:
         return
 
     # save screenshots of scene cuts to path
