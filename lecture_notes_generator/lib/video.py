@@ -162,25 +162,7 @@ def detect_scene_changes(
     return [0, *(x + 1 for x in peaks[0])]
 
 
-def get_snapshots(path, frames: List[int]):
-    if isinstance(path, Path):
-        cap = cv2.VideoCapture(str(path))
-    else:
-        cap = cv2.VideoCapture(path)
-
-    snapshots = []
-
-    for f in frames:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, f)
-        ok, frame = cap.read()
-        if not ok:
-            raise RuntimeError(f"Failed to get frame #{f} of video.")
-        snapshots.append((f, frame))
-
-    return snapshots
-
-
-def get_delayed_snapshots(path, frames: List[int], delay: int):
+def get_snapshots(path, frames: List[int], delay: int = 0):
     if isinstance(path, Path):
         cap = cv2.VideoCapture(str(path))
     else:

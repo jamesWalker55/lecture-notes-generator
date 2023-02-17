@@ -11,7 +11,7 @@ from .lib.utils import get_default_value
 from .lib.video import (
     detect_scene_changes,
     export_snapshots,
-    get_delayed_snapshots,
+    get_snapshots,
     get_fps,
     get_snapshots,
 )
@@ -116,8 +116,8 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
 
     # save screenshots of scene cuts to path
     if "snapshot_delay" in other_kwargs:
-        snapshots = get_delayed_snapshots(
-            path, scene_cuts, other_kwargs["snapshot_delay"]
+        snapshots = get_snapshots(
+            path, scene_cuts, delay=other_kwargs["snapshot_delay"]
         )
     else:
         snapshots = get_snapshots(path, scene_cuts)
