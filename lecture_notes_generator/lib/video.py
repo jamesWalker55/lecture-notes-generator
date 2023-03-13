@@ -92,6 +92,36 @@ def get_fps(path):
     return float(cap.get(cv2.CAP_PROP_FPS))
 
 
+def _unique_frames(path, frames: List[int], threshold: int = 10, delay: int=0):
+    """Given a video and a bunch of frame numbers, return frames that are unique from the previous frame"""
+    if isinstance(path, Path):
+        cap = cv2.VideoCapture(str(path))
+    else:
+        cap = cv2.VideoCapture(path)
+
+    uniq_scenes = []
+
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    snapshots = get_snapshots(path, frames, delay=delay)
+    scene_img = None  # the frame at the beginning of the current scene
+
+    for f, img in snapshots:
+        if scene_img is None:
+            scene_img = img
+            uniq_scenes.append((f, img))
+        else:
+            diff = cv2.absdiff(scene_img, img)
+            normalized_diff = diff.sum() / width / height
+
+            if normalized_diff > threshold:
+                scene_img = img
+                uniq_scenes.append((f, img))
+
+    return uniq_scenes
+
+
 def detect_scene_changes(
     path,
     height=None,
@@ -103,7 +133,8 @@ def detect_scene_changes(
     rel_height=0.5,
     plateau_size=None,
     skip_loading=False,
-) -> List[int]:
+    snapshot_delay=None,
+) -> List[Tuple[int, Any]]:
     """
     Return the frame numbers where scene changes occur in a given video. All kwargs are for the
     `scipy.signal.find_peaks()` function:
@@ -132,7 +163,8 @@ def detect_scene_changes(
         rel_height=rel_height,
         plateau_size=plateau_size,
     )
-    return [0, *(x + 1 for x in peaks[0])]
+    peak_frames = [0, *(x + 1 for x in peaks[0])]
+    return _unique_frames(path, peak_frames, delay=snapshot_delay)
 
 
 def get_snapshots(path, frames: List[int], delay: int = 0):

@@ -69,6 +69,7 @@ def cli():
         "wlen": args.diff_wlen,
         "rel_height": args.diff_rel_height,
         "plateau_size": args.diff_plateau_size,
+        "snapshot_delay": args.snapshot_delay,
     }
     other_kwargs = {
         "snapshot_delay": args.snapshot_delay,
@@ -115,16 +116,11 @@ def process_path(path, whisper_kwargs: dict, scene_kwargs: dict, other_kwargs: d
         return
 
     # save screenshots of scene cuts to path
-    if "snapshot_delay" in other_kwargs:
-        snapshots = get_snapshots(
-            path, scene_cuts, delay=other_kwargs["snapshot_delay"]
-        )
-    else:
-        snapshots = get_snapshots(path, scene_cuts)
     snapshot_dir.mkdir(exist_ok=True)
-    _export_snapshots(snapshots, snapshot_dir)
+    _export_snapshots(scene_cuts, snapshot_dir)
 
     # group them into scenes
-    scenes = generate_scenes(scene_cuts, segments, fps)
+    scene_cuts_f = [x[0] for x in scene_cuts]
+    scenes = generate_scenes(scene_cuts_f, segments, fps)
 
     render_scenes(scenes, path.stem, html_path, snapshot_dir)
