@@ -180,6 +180,12 @@ def get_snapshots(path, frames: List[int], delay: int = 0):
         delayed_f = min(f + delay, total_frames - 1)
         cap.set(cv2.CAP_PROP_POS_FRAMES, delayed_f)
         ok, frame = cap.read()
+        # try reading the next few frames
+        for _ in range(10):
+            if ok:
+                break
+            ok, frame = cap.read()
+        # still not ok, raise error this time
         if not ok:
             raise RuntimeError(f"Failed to get frame #{delayed_f} of video.")
         snapshots.append((f, frame))
